@@ -6,10 +6,12 @@ object Dependencies {
     val Cats       = "1.0.1"
     val CatsEffect = "0.10"
     val Spark      = "2.4.0"
+    val Opencsv    = "4.3.2"
+    val Slf4j      = "1.7.25"
   }
 
   val baseDependencies = Seq(
-    "com.opencsv"           % "opencsv"      % "4.1",
+    "com.opencsv"           % "opencsv"      % Version.Opencsv,
     "com.github.pureconfig" %% "pureconfig"  % Version.PureConfig,
 
     "org.typelevel"         %% "cats-effect" % Version.CatsEffect,

@@ -3,9 +3,11 @@ package com.nykytenko
 import cats.effect.Effect
 import pureconfig.error.ConfigReaderException
 import cats.implicits._
+import pureconfig.{CamelCase, ConfigFieldMapping, ProductHint}
 
 package object config {
 
+  implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, CamelCase))
 
   case class SparkConfig(name: String, master: String)
 

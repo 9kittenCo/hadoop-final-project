@@ -7,16 +7,17 @@ import org.apache.spark.sql.SparkSession
 import org.slf4j.{Logger, LoggerFactory}
 
 sealed trait InterfaceType
-final case object Rdd extends InterfaceType
-final case object Ds extends InterfaceType
+case object Rdd extends InterfaceType
+case object Ds extends InterfaceType
 
 object Main {
 
-  val logger: Logger = LoggerFactory.getLogger(Main.getClass)
+  val logger: Logger = LoggerFactory.getLogger(Main.getClass.getName)
 
   case class EtlResult(value: EtlDescription, session: SparkSession)
 
   def main(args: Array[String]): Unit = {
+
     val interfaceTypeList = List("rdd", "ds")
     val mIT = Map[String, InterfaceType]("rdd" -> Rdd, "ds" -> Ds)
 
@@ -29,15 +30,14 @@ object Main {
     } else logger.error("Wrong processing type")
   }
 
-  def program[F[_]](interfaceType: InterfaceType, etlName: String)(implicit E: Effect[F]): F[Unit] = {
+  def program[F[_]](interfaceType: InterfaceType, etlName: String)(implicit E: Effect[F]): F[Unit] =
     for {
       logic <- mainLogic[F](interfaceType, etlName)
       _     <- logic.value.process()
       _     <- Session[F].close(logic.session)
     } yield ()
-  }
 
-  def mainLogic[F[_]](interfaceType: InterfaceType, name:String)(implicit E: Effect[F]): F[EtlResult] = {
+  def mainLogic[F[_]](interfaceType: InterfaceType, name:String)(implicit E: Effect[F]): F[EtlResult] =
     for {
       configuration <- config.load[F]
       session       <- new Session[F].createFromConfig(configuration.spark)
@@ -46,5 +46,6 @@ object Main {
         case Rdd => new ProcessDataRDD()(session, configuration.hdfs)
       }
     } yield EtlResult(processData.mapEtl(name), session)
-  }
 }
+
+

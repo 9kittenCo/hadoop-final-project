@@ -9,6 +9,7 @@ case class Session[F[_]]()(implicit E: Effect[F]) {
     SparkSession.builder
       .master(config.master)
       .appName(config.name)
+      .config("spark.driver.memory","1g")
       .config("spark.sql.warehouse.dir", "target/spark-warehouse")
       .config("spark.hadoop.mapreduce.input.fileinputformat.input.dir.recursive", "true")
       .getOrCreate
